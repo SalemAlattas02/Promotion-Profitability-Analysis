@@ -39,6 +39,10 @@ class CurrencyConverter():
         return self.request(payload)
     
     def request(self, payload):
+        """
+        to do :
+        check the database for if the rate exist before request
+        """
         response = requests.get(baseURL,params=payload)    
         self.save_rates(response.json())
         return response
@@ -55,6 +59,7 @@ class CurrencyConverter():
         self.db.commit()
     
     def get_rate(self, quote, base = TARGET_CURRENCY, date = date.today().strftime("%Y-%m-%d")):
+        "slow and need cach improvement"
         rate = self.db.execute(
             "SELECT rate FROM rates WHERE date=? AND base=? AND quote=?",
             (date, base, quote),
