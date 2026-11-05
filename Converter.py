@@ -1,6 +1,8 @@
 from datetime import date
 import requests
 import sqlite3
+from functools import lru_cache
+
 
 baseURL = 'https://api.frankfurter.dev/v2/rates'
 
@@ -57,7 +59,8 @@ class CurrencyConverter():
     def save_rates(self, rates: list):
         self.db.executemany("INSERT OR REPLACE INTO rates VALUES (:date,:base,:quote,:rate)",rates)
         self.db.commit()
-    
+
+    @lru_cache(maxsize=128)
     def get_rate(self, quote, base = TARGET_CURRENCY, date = date.today().strftime("%Y-%m-%d")):
         "slow and need cach improvement"
         rate = self.db.execute(
