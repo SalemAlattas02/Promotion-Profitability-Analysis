@@ -64,6 +64,8 @@ class CurrencyConverter():
             "SELECT rate FROM rates WHERE date=? AND base=? AND quote=?",
             (date, base, quote),
         ).fetchone()
+        if rate is None:
+            raise ValueError("Rate is not in the database")
         return rate[0]
     
     def convert(self, value: float, quote, base = TARGET_CURRENCY, date = date.today().strftime("%Y-%m-%d")):
@@ -71,4 +73,12 @@ class CurrencyConverter():
             return value
         # from base to quote divide
         return value / self.get_rate(quote=quote, base=base, date=date)   
-    
+
+    def check_rate(self,base,quote):
+        rate = self.db.execute(
+            "SELECT rate FROM rates WHERE date=? AND base=? AND quote=?",
+            (date, base, quote),
+        ).fetchone()
+        if rate is not None:
+            return True
+        return False
